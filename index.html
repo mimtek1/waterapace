@@ -1,7 +1,7 @@
 <?php
 /**
- * WATER APACE SRL - Ana Sayfa (index.php)
- * PHP 8 / PDO / Çok Dilli (Romanca / İngilizce)
+ * WATER APACE SRL - Ana Sayfa ve İletişim Bilgileri (index.php)
+ * PHP 8 / Çok Dilli (Romanca / İngilizce) - Veritabanı ve Form İşleme Kaldırıldı
  */
 
 declare(strict_types=1);
@@ -23,7 +23,7 @@ $t = [
         'contact' => 'Contact',
         'hero_title' => 'Construcții de Stații de Tratare a Apei în România',
         'hero_desc' => 'Soluții inginerice avansate, EPC și infrastructură hidrotehnică cu peste 15 ani de excelență.',
-        'cta_offer' => 'Solicită Ofertă',
+        'cta_offer' => 'Contactează-ne',
         'cta_projects' => 'Vezi Proiectele',
         'about_title' => 'Despre Noi - 15 Ani de Experiență în Ingineria Mediului',
         'about_text_1' => 'Fondată cu misiunea de a livra standarde înalte în domeniul construcțiilor hidrotehnice și al instalațiilor de mediu, <strong>WATER APACE SRL</strong> a devenit în ultimii 15 ani un nume de referință pe piața din România. Specializați în proiectarea, execuția și punerea în funcțiune a stațiilor de tratare a apei potabile și a apelor uzate, oferim soluții integrate la cheie (EPC) pentru sectorul municipal și industrial.',
@@ -45,7 +45,7 @@ $t = [
         'proj_3_title' => 'Decantor Lamelar Industrial Brașov',
         'proj_3_desc' => 'Integrare de pachete lamelare de înaltă eficiență pentru ape industriale.',
         'contact_title' => 'Date de Contact',
-        'contact_desc' => 'Colaborăm pentru proiecte de succes în domeniul apei. Ne puteți contacta prin e-mail sau telefon.',
+        'contact_desc' => 'Pentru colaborări și solicitări de proiecte în domeniul apei, ne puteți contacta direct prin e-mail sau telefon.',
         'address' => 'Bulevardul Unirii, Nr. 24, Sector 3, București, România',
         'phone_contact' => '+40 21 555 0192',
         'email_contact' => 'info@waterapace.space',
@@ -82,7 +82,7 @@ $t = [
         'proj_3_title' => 'Brașov Industrial Lamella Clarifier',
         'proj_3_desc' => 'Integration of high-efficiency lamella packages for heavy industrial wastewater.',
         'contact_title' => 'Contact Information',
-        'contact_desc' => 'Let us collaborate on successful water projects. Reach out to us via email or phone.',
+        'contact_desc' => 'For collaborations and water project inquiries, you can reach us directly via email or phone.',
         'address' => 'Bulevardul Unirii, No. 24, District 3, Bucharest, Romania',
         'phone_contact' => '+40 21 555 0192',
         'email_contact' => 'info@waterapace.space',
@@ -122,7 +122,7 @@ $tr = $t[$lang];
         .project-card:hover { transform: translateY(-5px); }
         .project-card img { height: 220px; object-fit: cover; }
         .contact-section { background-color: var(--light-bg); padding: 80px 0; }
-        .contact-info-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .contact-info-box { background: white; padding: 50px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         footer { background-color: var(--primary-blue); color: white; padding: 40px 0 20px 0; }
     </style>
 </head>
@@ -270,7 +270,7 @@ $tr = $t[$lang];
         </div>
     </section>
 
-    <!-- İletişim Bilgileri Bölümü (Form Kaldırıldı) -->
+    <!-- İletişim Bilgileri Bölümü (Form Tamamen Kaldırıldı) -->
     <section class="contact-section" id="contact">
         <div class="container">
             <div class="row justify-content-center">
@@ -279,7 +279,7 @@ $tr = $t[$lang];
                         <h2 class="fw-bold text-primary mb-3"><?= $tr['contact_title'] ?></h2>
                         <p class="text-muted mb-4"><?= $tr['contact_desc'] ?></p>
 
-                        <div class="py-3">
+                        <div class="my-4">
                             <p class="mb-3 fs-5"><i class="fa-solid fa-location-dot me-3 text-info"></i> <?= $tr['address'] ?></p>
                             <p class="mb-3 fs-5"><i class="fa-solid fa-phone me-3 text-info"></i> <a href="tel:<?= str_replace(' ', '', $tr['phone_contact']) ?>" class="text-decoration-none text-dark"><?= $tr['phone_contact'] ?></a></p>
                             <p class="mb-0 fs-5"><i class="fa-solid fa-envelope me-3 text-info"></i> <a href="mailto:<?= $tr['email_contact'] ?>" class="text-decoration-none text-dark"><?= $tr['email_contact'] ?></a></p>
