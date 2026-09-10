@@ -1,84 +1,11 @@
 <?php
 /**
- * WATER APACE SRL - Ana Sayfa ve İletişim Formu (index.php)
+ * WATER APACE SRL - Ana Sayfa (index.php)
  * PHP 8 / PDO / Çok Dilli (Romanca / İngilizce)
  */
 
 declare(strict_types=1);
 
-// Veritabanı bağlantısı config klasöründen dahil ediliyor
-//require_once 'config/database.php';
-/*
-$db = (new Database())->connect();
-
-// Form gönderildi mi kontrolü
-$formStatus = null;
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_contact'])) {
-    $ad_soyad     = trim($_POST['ad_soyad'] ?? '');
-    $email        = trim($_POST['email'] ?? '');
-    $telefon      = trim($_POST['telefon'] ?? '');
-    $firma_adi    = trim($_POST['firma_adi'] ?? '');
-    $konu         = trim($_POST['konu'] ?? '');
-    $notu         = trim($_POST['notu'] ?? '');
-    $form_kaynagi = trim($_POST['form_kaynagi'] ?? 'Water Apace Web İletişim Formu');
-    $ulke_kodu    = intval($_POST['ulke_kodu'] ?? 40); // Romanya varsayılan
-    $ulke         = trim($_POST['ulke'] ?? 'România');
-    $kaynak       = 9; // İstediğiniz gibi kaynak 9 yapıldı
-    $alarm        = 0;
-    $tarih        = date('Y-m-d');
-    $web          = $_SERVER['HTTP_HOST'];
-
-    if (!empty($ad_soyad) && !empty($email) && !empty($notu)) {
-        if ($db) {
-            try {
-                $sql = "INSERT INTO as_talepler (tarih, notu, konu, firma_adi, ad_soyad, email, ulke_kodu, ulke, telefon, kaynak, web, alarm, form_kaynagi) 
-                        VALUES (:tarih, :notu, :konu, :firma_adi, :ad_soyad, :email, :ulke_kodu, :ulke, :telefon, :kaynak, :web, :alarm, :form_kaynagi)";
-                
-                $stmt = $db->prepare($sql);
-                $stmt->execute([
-                    ':tarih'        => $tarih,
-                    ':notu'         => $notu,
-                    ':konu'         => $konu,
-                    ':firma_adi'    => $firma_adi,
-                    ':ad_soyad'     => $ad_soyad,
-                    ':email'        => $email,
-                    ':ulke_kodu'    => $ulke_kodu,
-                    ':ulke'         => $ulke,
-                    ':telefon'      => $telefon,
-                    ':kaynak'       => $kaynak,
-                    ':web'          => $web,
-                    ':alarm'        => $alarm,
-                    ':form_kaynagi' => $form_kaynagi
-                ]);
-                
-                // E-posta gönderimi (info@waterapace.space adresine)
-                $to = 'info@waterapace.space';
-                $subject = 'Yeni Talep / Mesaj - Water Apace SRL';
-                $emailBody = "Yeni bir web talebi alındı:\n\n";
-                $emailBody .= "Ad Soyad: {$ad_soyad}\n";
-                $emailBody .= "Firma: {$firma_adi}\n";
-                $emailBody .= "E-posta: {$email}\n";
-                $emailBody .= "Telefon: +{$ulke_kodu} {$telefon}\n";
-                $emailBody .= "Konu: {$konu}\n";
-                $emailBody .= "Mesaj:\n{$notu}\n";
-                
-                $headers = "From: no-reply@waterapace.space\r\n";
-                $headers .= "Reply-To: {$email}\r\n";
-                
-                @mail($to, $subject, $emailBody, $headers);
-
-                $formStatus = 'success';
-            } catch (Exception $e) {
-                $formStatus = 'error';
-            }
-        } else {
-            $formStatus = 'error';
-        }
-    } else {
-        $formStatus = 'error';
-    }
-}
-*/
 // Dil seçimi yönetimi (Varsayılan: Romence - 'ro')
 $lang = $_GET['lang'] ?? 'ro';
 if (!in_array($lang, ['ro', 'en'])) {
@@ -117,16 +44,8 @@ $t = [
         'proj_2_desc' => 'Sistem automatizat de filtrare și dezinfecție pentru rețeaua municipală.',
         'proj_3_title' => 'Decantor Lamelar Industrial Brașov',
         'proj_3_desc' => 'Integrare de pachete lamelare de înaltă eficiență pentru ape industriale.',
-        'contact_title' => 'Contactați-ne & Solicită Informații',
-        'form_name' => 'Nume și Prenume',
-        'form_email' => 'Adresă E-mail',
-        'form_phone' => 'Număr Telefon (Mobil)',
-        'form_company' => 'Nume Companie',
-        'form_subject' => 'Subiect / Konu',
-        'form_message' => 'Mesaj sau Notă',
-        'form_submit' => 'Trimite Solicitarea',
-        'form_success' => 'Solicitarea dumneavoastră a fost trimisă cu succes! Vă vom contacta în cel mai scurt timp.',
-        'form_error' => 'A apărut o eroare sau câmpurile obligatorii nu sunt completate.',
+        'contact_title' => 'Date de Contact',
+        'contact_desc' => 'Colaborăm pentru proiecte de succes în domeniul apei. Ne puteți contacta prin e-mail sau telefon.',
         'address' => 'Bulevardul Unirii, Nr. 24, Sector 3, București, România',
         'phone_contact' => '+40 21 555 0192',
         'email_contact' => 'info@waterapace.space',
@@ -141,7 +60,7 @@ $t = [
         'contact' => 'Contact',
         'hero_title' => 'Water Treatment Plant Construction in Romania',
         'hero_desc' => 'Advanced engineering solutions, EPC projects, and hydraulic infrastructure with over 15 years of excellence.',
-        'cta_offer' => 'Request a Quote',
+        'cta_offer' => 'Contact Us',
         'cta_projects' => 'View Projects',
         'about_title' => 'About Us - 15 Years of Excellence in Environmental Engineering',
         'about_text_1' => 'Founded with the mission to deliver high standards in hydro-technical construction and environmental installations, <strong>WATER APACE SRL</strong> has established itself over the past 15 years as a trusted name in Romania. Specializing in the design, construction, and commissioning of drinking water treatment and wastewater plants, we provide comprehensive turn-key (EPC) solutions for both municipal and industrial sectors.',
@@ -162,16 +81,8 @@ $t = [
         'proj_2_desc' => 'Automated filtration and disinfection system for municipal water distribution.',
         'proj_3_title' => 'Brașov Industrial Lamella Clarifier',
         'proj_3_desc' => 'Integration of high-efficiency lamella packages for heavy industrial wastewater.',
-        'contact_title' => 'Contact Us & Request Information',
-        'form_name' => 'Full Name',
-        'form_email' => 'Email Address',
-        'form_phone' => 'Mobile Phone',
-        'form_company' => 'Company Name',
-        'form_subject' => 'Subject',
-        'form_message' => 'Message or Note',
-        'form_submit' => 'Send Request',
-        'form_success' => 'Your request has been successfully sent! We will contact you shortly.',
-        'form_error' => 'An error occurred or required fields are missing.',
+        'contact_title' => 'Contact Information',
+        'contact_desc' => 'Let us collaborate on successful water projects. Reach out to us via email or phone.',
         'address' => 'Bulevardul Unirii, No. 24, District 3, Bucharest, Romania',
         'phone_contact' => '+40 21 555 0192',
         'email_contact' => 'info@waterapace.space',
@@ -211,7 +122,7 @@ $tr = $t[$lang];
         .project-card:hover { transform: translateY(-5px); }
         .project-card img { height: 220px; object-fit: cover; }
         .contact-section { background-color: var(--light-bg); padding: 80px 0; }
-        .contact-form-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .contact-info-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         footer { background-color: var(--primary-blue); color: white; padding: 40px 0 20px 0; }
     </style>
 </head>
@@ -359,75 +270,19 @@ $tr = $t[$lang];
         </div>
     </section>
 
-    <!-- İletişim Formu ve Bilgileri Bölümü -->
+    <!-- İletişim Bilgileri Bölümü (Form Kaldırıldı) -->
     <section class="contact-section" id="contact">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
-                    <div class="contact-form-box">
-                        <h2 class="fw-bold text-primary mb-3 text-center"><?= $tr['contact_title'] ?></h2>
-                        <p class="text-muted text-center mb-4">Colaborăm pentru proiecte de succes în domeniul apei. Contactați-ne sau lăsați-ne un mesaj.</p>
+                    <div class="contact-info-box text-center">
+                        <h2 class="fw-bold text-primary mb-3"><?= $tr['contact_title'] ?></h2>
+                        <p class="text-muted mb-4"><?= $tr['contact_desc'] ?></p>
 
-                        <?php if ($formStatus === 'success'): ?>
-                            <div class="alert alert-success text-center" role="alert">
-                                <?= $tr['form_success'] ?>
-                            </div>
-                        <?php elseif ($formStatus === 'error'): ?>
-                            <div class="alert alert-danger text-center" role="alert">
-                                <?= $tr['form_error'] ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <form action="index.php?lang=<?= $lang ?>#contact" method="POST">
-                            <!-- Hangi formdan geldiğini belirten gizli alan ve kaynak -->
-                            <input type="hidden" name="form_kaynagi" value="Water Apace Ana Sayfa İletişim Formu">
-                            <input type="hidden" name="ulke" value="România">
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="ad_soyad" class="form-label fw-semibold"><?= $tr['form_name'] ?> *</label>
-                                    <input type="text" class="form-control" id="ad_soyad" name="ad_soyad" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="firma_adi" class="form-label fw-semibold"><?= $tr['form_company'] ?></label>
-                                    <input type="text" class="form-control" id="firma_adi" name="firma_adi">
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label fw-semibold"><?= $tr['form_email'] ?> *</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="telefon" class="form-label fw-semibold"><?= $tr['form_phone'] ?></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">+</span>
-                                        <input type="text" class="form-control" name="ulke_kodu" value="40" style="max-width: 70px;">
-                                        <input type="text" class="form-control" id="telefon" name="telefon" placeholder="712 345 678">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="konu" class="form-label fw-semibold"><?= $tr['form_subject'] ?></label>
-                                <input type="text" class="form-control" id="konu" name="konu">
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="notu" class="form-label fw-semibold"><?= $tr['form_message'] ?> *</label>
-                                <textarea class="form-control" id="notu" name="notu" rows="4" required></textarea>
-                            </div>
-
-                            <div class="d-grid">
-                                <button type="submit" name="submit_contact" class="btn btn-info text-white btn-lg fw-bold"><?= $tr['form_submit'] ?></button>
-                            </div>
-                        </form>
-
-                        <div class="mt-5 pt-4 border-top text-center text-muted small">
-                            <p class="mb-1"><i class="fa-solid fa-location-dot me-2 text-info"></i> <?= $tr['address'] ?></p>
-                            <p class="mb-1"><i class="fa-solid fa-phone me-2 text-info"></i> <?= $tr['phone_contact'] ?></p>
-                            <p class="mb-0"><i class="fa-solid fa-envelope me-2 text-info"></i> <?= $tr['email_contact'] ?></p>
+                        <div class="py-3">
+                            <p class="mb-3 fs-5"><i class="fa-solid fa-location-dot me-3 text-info"></i> <?= $tr['address'] ?></p>
+                            <p class="mb-3 fs-5"><i class="fa-solid fa-phone me-3 text-info"></i> <a href="tel:<?= str_replace(' ', '', $tr['phone_contact']) ?>" class="text-decoration-none text-dark"><?= $tr['phone_contact'] ?></a></p>
+                            <p class="mb-0 fs-5"><i class="fa-solid fa-envelope me-3 text-info"></i> <a href="mailto:<?= $tr['email_contact'] ?>" class="text-decoration-none text-dark"><?= $tr['email_contact'] ?></a></p>
                         </div>
                     </div>
                 </div>
@@ -441,10 +296,10 @@ $tr = $t[$lang];
             <div class="row g-4 align-items-center">
                 <div class="col-md-6 text-center text-md-start">
                     <h5 class="fw-bold mb-1">WATER APACE SRL</h5>
-                    <p class="small text-white-50 mb-0">&copy; <?= date('Y')-2 ?> WATER APACE SRL. <?= $tr['rights'] ?></p>
+                    <p class="small text-white-50 mb-0">&copy; <?= date('Y') ?> WATER APACE SRL. <?= $tr['rights'] ?></p>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
-                    <p class="small text-white-50 mb-0"> WATER APACE SRL.</p>
+                    <p class="small text-white-50 mb-0">WATER APACE SRL.</p>
                 </div>
             </div>
         </div>
