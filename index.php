@@ -1,91 +1,9 @@
 <?php
-/**
- * WATER APACE SRL - Ana Sayfa ve İletişim Formu (index.php)
- * PHP 8 / PDO / Çok Dilli (Romanca / İngilizce)
- */
-
-declare(strict_types=1);
-
-// Veritabanı bağlantısı config klasöründen dahil ediliyor
-require_once 'config/database.php';
-
-$db = (new Database())->connect();
-
-// Form gönderildi mi kontrolü
-$formStatus = null;
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_contact'])) {
-    $ad_soyad     = trim($_POST['ad_soyad'] ?? '');
-    $email        = trim($_POST['email'] ?? '');
-    $telefon      = trim($_POST['telefon'] ?? '');
-    $firma_adi    = trim($_POST['firma_adi'] ?? '');
-    $konu         = trim($_POST['konu'] ?? '');
-    $notu         = trim($_POST['notu'] ?? '');
-    $form_kaynagi = trim($_POST['form_kaynagi'] ?? 'Water Apace Web İletişim Formu');
-    $ulke_kodu    = intval($_POST['ulke_kodu'] ?? 40); // Romanya varsayılan
-    $ulke         = trim($_POST['ulke'] ?? 'România');
-    $kaynak       = 9; // İstediğiniz gibi kaynak 9 yapıldı
-    $alarm        = 0;
-    $tarih        = date('Y-m-d');
-    $web          = $_SERVER['HTTP_HOST'];
-
-    if (!empty($ad_soyad) && !empty($email) && !empty($notu)) {
-        if ($db) {
-            try {
-                $sql = "INSERT INTO as_talepler (tarih, notu, konu, firma_adi, ad_soyad, email, ulke_kodu, ulke, telefon, kaynak, web, alarm, form_kaynagi) 
-                        VALUES (:tarih, :notu, :konu, :firma_adi, :ad_soyad, :email, :ulke_kodu, :ulke, :telefon, :kaynak, :web, :alarm, :form_kaynagi)";
-                
-                $stmt = $db->prepare($sql);
-                $stmt->execute([
-                    ':tarih'        => $tarih,
-                    ':notu'         => $notu,
-                    ':konu'         => $konu,
-                    ':firma_adi'    => $firma_adi,
-                    ':ad_soyad'     => $ad_soyad,
-                    ':email'        => $email,
-                    ':ulke_kodu'    => $ulke_kodu,
-                    ':ulke'         => $ulke,
-                    ':telefon'      => $telefon,
-                    ':kaynak'       => $kaynak,
-                    ':web'          => $web,
-                    ':alarm'        => $alarm,
-                    ':form_kaynagi' => $form_kaynagi
-                ]);
-                
-                // E-posta gönderimi (info@waterapace.space adresine)
-                $to = 'info@waterapace.space';
-                $subject = 'Yeni Talep / Mesaj - Water Apace SRL';
-                $emailBody = "Yeni bir web talebi alındı:\n\n";
-                $emailBody .= "Ad Soyad: {$ad_soyad}\n";
-                $emailBody .= "Firma: {$firma_adi}\n";
-                $emailBody .= "E-posta: {$email}\n";
-                $emailBody .= "Telefon: +{$ulke_kodu} {$telefon}\n";
-                $emailBody .= "Konu: {$konu}\n";
-                $emailBody .= "Mesaj:\n{$notu}\n";
-                
-                $headers = "From: no-reply@waterapace.space\r\n";
-                $headers .= "Reply-To: {$email}\r\n";
-                
-                @mail($to, $subject, $emailBody, $headers);
-
-                $formStatus = 'success';
-            } catch (Exception $e) {
-                $formStatus = 'error';
-            }
-        } else {
-            $formStatus = 'error';
-        }
-    } else {
-        $formStatus = 'error';
-    }
-}
-
-// Dil seçimi yönetimi (Varsayılan: Romence - 'ro')
 $lang = $_GET['lang'] ?? 'ro';
-if (!in_array($lang, ['ro', 'en'])) {
+if (!in_array($lang, ['ro', 'en'], true)) {
     $lang = 'ro';
 }
 
-// Çeviri Sözlüğü
 $t = [
     'ro' => [
         'title' => 'Water Apace SRL | Construcții Stații de Tratare a Apei',
@@ -95,38 +13,30 @@ $t = [
         'projects' => 'Proiecte',
         'contact' => 'Contact',
         'hero_title' => 'Construcții de Stații de Tratare a Apei în România',
-        'hero_desc' => 'Soluții inginerice avansate, EPC și infrastructură hidrotehnică cu peste 15 ani de excelență.',
-        'cta_offer' => 'Solicită Ofertă',
+        'hero_desc' => 'Soluții inginerești avansate, proiecte EPC și infrastructură hidrotehnică pentru instalații moderne de tratare a apei.',
+        'cta_offer' => 'Contactează-ne',
         'cta_projects' => 'Vezi Proiectele',
-        'about_title' => 'Despre Noi - 15 Ani de Experiență în Ingineria Mediului',
-        'about_text_1' => 'Fondată cu misiunea de a livra standarde înalte în domeniul construcțiilor hidrotehnice și al instalațiilor de mediu, <strong>WATER APACE SRL</strong> a devenit în ultimii 15 ani un nume de referință pe piața din România. Specializați în proiectarea, execuția și punerea în funcțiune a stațiilor de tratare a apei potabile și a apelor uzate, oferim soluții integrate la cheie (EPC) pentru sectorul municipal și industrial.',
-        'about_text_2' => 'Echipa noastră de ingineri experimentați și tehnicieni calificați gestionează proiecte complexe de la faza de studiu de fezabilitate până la predarea finală. Utilizăm tehnologii moderne de decantare, sisteme lamelare avansate și echipamente de înaltă eficiență energetică, asigurând durabilitate, conformitate cu normele Uniunii Europene și optimizarea costurilor operaționale pentru fiecare beneficiar în parte.',
+        'about_title' => 'Despre Noi - Inginerie și Soluții pentru Tratarea Apei',
+        'about_text_1' => 'WATER APACE SRL oferă servicii de proiectare, execuție și punere în funcțiune pentru instalații de tratare a apei potabile și a apelor uzate, adresându-se atât sectorului municipal, cât și celui industrial.',
+        'about_text_2' => 'Prin integrarea tehnologiilor moderne de tratare, sistemelor lamelare și echipamentelor de înaltă eficiență, urmărim să oferim soluții fiabile, durabile și adaptate cerințelor fiecărui proiect.',
         'services_title' => 'Domeniile Noastre de Activitate',
         'service_1_title' => 'Apă Potabilă',
-        'service_1_desc' => 'Stații de tratare, filtrare și potabilizare a apei la standarde europene riguroase.',
-        'service_2_title' => 'Epurare Ape Uzate',
-        'service_2_desc' => 'Soluții complete pentru stații de epurare municipale și industriale.',
+        'service_1_desc' => 'Soluții pentru tratarea, filtrarea și potabilizarea apei, adaptate cerințelor proiectelor municipale și industriale.',
+        'service_2_title' => 'Epurarea Apelor Uzate',
+        'service_2_desc' => 'Soluții tehnice pentru stații de epurare municipale și industriale și pentru modernizarea instalațiilor existente.',
         'service_3_title' => 'Sisteme Lamelare',
-        'service_3_desc' => 'Module lamelare și decantoare performante pentru optimizarea separării.',
+        'service_3_desc' => 'Module lamelare și sisteme de decantare pentru creșterea eficienței proceselor de separare solid-lichid.',
         'service_4_title' => 'Proiecte EPC',
-        'service_4_desc' => 'Servicii integrate la cheie: proiectare, achiziție, construcție și punere în funcțiune.',
+        'service_4_desc' => 'Servicii integrate de proiectare, achiziție, construcție, instalare și punere în funcțiune.',
         'projects_title' => 'Proiecte Reprezentative',
-        'proj_1_title' => 'Stația de Epurare Otopeni',
-        'proj_1_desc' => 'Modernizarea și extinderea capacității de epurare a apelor uzate urbane.',
-        'proj_2_title' => 'Stație Tratare Apă Potabilă Ploiești',
-        'proj_2_desc' => 'Sistem automatizat de filtrare și dezinfecție pentru rețeaua municipală.',
-        'proj_3_title' => 'Decantor Lamelar Industrial Brașov',
-        'proj_3_desc' => 'Integrare de pachete lamelare de înaltă eficiență pentru ape industriale.',
-        'contact_title' => 'Contactați-ne & Solicită Informații',
-        'form_name' => 'Nume și Prenume',
-        'form_email' => 'Adresă E-mail',
-        'form_phone' => 'Număr Telefon (Mobil)',
-        'form_company' => 'Nume Companie',
-        'form_subject' => 'Subiect / Konu',
-        'form_message' => 'Mesaj sau Notă',
-        'form_submit' => 'Trimite Solicitarea',
-        'form_success' => 'Solicitarea dumneavoastră a fost trimisă cu succes! Vă vom contacta în cel mai scurt timp.',
-        'form_error' => 'A apărut o eroare sau câmpurile obligatorii nu sunt completate.',
+        'proj_1_title' => 'Stații de Tratare și Epurare a Apei',
+        'proj_1_desc' => 'Soluții pentru construcția, modernizarea și extinderea instalațiilor de tratare și epurare a apei.',
+        'proj_2_title' => 'Sisteme pentru Apă Potabilă',
+        'proj_2_desc' => 'Sisteme de filtrare, tratare și dezinfecție pentru instalații de alimentare cu apă.',
+        'proj_3_title' => 'Sisteme Lamelare Industriale',
+        'proj_3_desc' => 'Integrarea sistemelor lamelare de înaltă eficiență pentru procesele industriale de tratare a apei.',
+        'contact_title' => 'Date de Contact',
+        'contact_desc' => 'Pentru colaborări, solicitări tehnice și proiecte în domeniul tratării apei, ne puteți contacta direct prin e-mail sau telefon.',
         'address' => 'Bulevardul Unirii, Nr. 24, Sector 3, București, România',
         'phone_contact' => '+40 21 555 0192',
         'email_contact' => 'info@waterapace.space',
@@ -140,38 +50,30 @@ $t = [
         'projects' => 'Projects',
         'contact' => 'Contact',
         'hero_title' => 'Water Treatment Plant Construction in Romania',
-        'hero_desc' => 'Advanced engineering solutions, EPC projects, and hydraulic infrastructure with over 15 years of excellence.',
-        'cta_offer' => 'Request a Quote',
+        'hero_desc' => 'Advanced engineering solutions, EPC projects, and water infrastructure for modern water treatment facilities.',
+        'cta_offer' => 'Contact Us',
         'cta_projects' => 'View Projects',
-        'about_title' => 'About Us - 15 Years of Excellence in Environmental Engineering',
-        'about_text_1' => 'Founded with the mission to deliver high standards in hydro-technical construction and environmental installations, <strong>WATER APACE SRL</strong> has established itself over the past 15 years as a trusted name in Romania. Specializing in the design, construction, and commissioning of drinking water treatment and wastewater plants, we provide comprehensive turn-key (EPC) solutions for both municipal and industrial sectors.',
-        'about_text_2' => 'Our team of experienced engineers and qualified technicians manages complex projects from feasibility studies to final handover. We integrate modern sedimentation technologies, advanced lamella modules, and high-efficiency equipment to ensure durability, full compliance with European Union standards, and optimized operational costs for every client.',
+        'about_title' => 'About Us - Engineering and Water Treatment Solutions',
+        'about_text_1' => 'WATER APACE SRL provides engineering, construction, and commissioning services for drinking water and wastewater treatment facilities, serving both municipal and industrial projects.',
+        'about_text_2' => 'By integrating modern treatment technologies, advanced lamella systems, and high-efficiency equipment, we aim to provide reliable, durable, and project-specific solutions.',
         'services_title' => 'Our Core Fields of Activity',
         'service_1_title' => 'Drinking Water',
-        'service_1_desc' => 'Treatment, filtration, and potable water stations built to rigorous European standards.',
+        'service_1_desc' => 'Solutions for water treatment, filtration, and purification designed for municipal and industrial applications.',
         'service_2_title' => 'Wastewater Treatment',
-        'service_2_desc' => 'Complete engineering solutions for municipal and industrial wastewater treatment plants.',
+        'service_2_desc' => 'Technical solutions for municipal and industrial wastewater treatment plants and modernization projects.',
         'service_3_title' => 'Lamella Systems',
-        'service_3_desc' => 'High-performance lamella modules and clarifiers for enhanced separation processes.',
+        'service_3_desc' => 'High-efficiency lamella modules and clarification systems for improved solid-liquid separation.',
         'service_4_title' => 'EPC Projects',
-        'service_4_desc' => 'Turnkey integrated services: engineering, procurement, construction, and commissioning.',
+        'service_4_desc' => 'Integrated engineering, procurement, construction, installation, and commissioning services.',
         'projects_title' => 'Representative Projects',
-        'proj_1_title' => 'Otopeni Wastewater Treatment Plant',
-        'proj_1_desc' => 'Modernization and capacity expansion of municipal wastewater treatment facilities.',
-        'proj_2_title' => 'Ploiești Potable Water Treatment Station',
-        'proj_2_desc' => 'Automated filtration and disinfection system for municipal water distribution.',
-        'proj_3_title' => 'Brașov Industrial Lamella Clarifier',
-        'proj_3_desc' => 'Integration of high-efficiency lamella packages for heavy industrial wastewater.',
-        'contact_title' => 'Contact Us & Request Information',
-        'form_name' => 'Full Name',
-        'form_email' => 'Email Address',
-        'form_phone' => 'Mobile Phone',
-        'form_company' => 'Company Name',
-        'form_subject' => 'Subject',
-        'form_message' => 'Message or Note',
-        'form_submit' => 'Send Request',
-        'form_success' => 'Your request has been successfully sent! We will contact you shortly.',
-        'form_error' => 'An error occurred or required fields are missing.',
+        'proj_1_title' => 'Water and Wastewater Treatment Plants',
+        'proj_1_desc' => 'Solutions for the construction, modernization, and expansion of water and wastewater treatment facilities.',
+        'proj_2_title' => 'Drinking Water Treatment Systems',
+        'proj_2_desc' => 'Filtration, treatment, and disinfection systems for water supply facilities.',
+        'proj_3_title' => 'Industrial Lamella Systems',
+        'proj_3_desc' => 'Integration of high-efficiency lamella systems for industrial water treatment processes.',
+        'contact_title' => 'Contact Information',
+        'contact_desc' => 'For cooperation, technical inquiries, and water treatment projects, please contact us directly by email or phone.',
         'address' => 'Bulevardul Unirii, No. 24, District 3, Bucharest, Romania',
         'phone_contact' => '+40 21 555 0192',
         'email_contact' => 'info@waterapace.space',
@@ -180,35 +82,26 @@ $t = [
 ];
 
 $tr = $t[$lang];
+$page_title = htmlspecialchars($tr['title'], ENT_QUOTES, 'UTF-8');
 ?>
 <!DOCTYPE html>
 <html lang="<?= $lang ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $tr['title'] ?></title>
-    <!-- Bootstrap 5 CSS -->
+    <title><?= $page_title ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-blue: #0d3b66;
-            --accent-cyan: #00a8cc;
-            --light-bg: #f4f9fc;
-        }
+        :root { --primary-blue: #0d3b66; --accent-cyan: #00a8cc; --light-bg: #f4f9fc; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
         .navbar { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .hero-section {
             background: linear-gradient(rgba(13, 59, 102, 0.85), rgba(0, 168, 204, 0.75)), url('https://images.unsplash.com/photo-1541888946425-d0fbb18f72c3?auto=format&fit=crop&w=1920&q=80') no-repeat center center;
-            background-size: cover;
-            color: white;
-            padding: 120px 0;
+            background-size: cover; color: white; padding: 120px 0;
         }
-        .feature-box { background: white; border-radius: 8px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.3s; height: 100%; }
-        .feature-box:hover { transform: translateY(-5px); }
-        .project-card { border: none; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.3s; height: 100%; }
-        .project-card:hover { transform: translateY(-5px); }
+        .feature-box { background: white; border-radius: 8px; padding: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); height: 100%; }
+        .project-card { border: none; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); height: 100%; }
         .project-card img { height: 220px; object-fit: cover; }
         .contact-section { background-color: var(--light-bg); padding: 80px 0; }
         .contact-form-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
@@ -217,7 +110,6 @@ $tr = $t[$lang];
 </head>
 <body>
 
-    <!-- Üst Menü -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container">
             <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="index.php?lang=<?= $lang ?>">
@@ -245,7 +137,6 @@ $tr = $t[$lang];
         </div>
     </nav>
 
-    <!-- Hero Alanı -->
     <header class="hero-section text-center text-md-start">
         <div class="container">
             <div class="row align-items-center">
@@ -259,7 +150,6 @@ $tr = $t[$lang];
         </div>
     </header>
 
-    <!-- Hakkımızda (Despre Noi) -->
     <section class="py-5" id="despre">
         <div class="container py-4">
             <div class="row align-items-center g-5">
@@ -270,22 +160,15 @@ $tr = $t[$lang];
                     <h2 class="fw-bold text-primary mb-4"><?= $tr['about_title'] ?></h2>
                     <p class="text-muted leading-relaxed"><?= $tr['about_text_1'] ?></p>
                     <p class="text-muted leading-relaxed"><?= $tr['about_text_2'] ?></p>
-                    <div class="mt-4">
-                        <span class="badge bg-primary p-2 px-3 me-2">15+ Ani Experiență</span>
-                        <span class="badge bg-info text-white p-2 px-3 me-2">Standarde UE</span>
-                        <span class="badge bg-secondary p-2 px-3">Proiecte EPC</span>
-                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Uzmanlık Alanları / Servicii -->
     <section class="py-5 bg-light" id="servicii">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="fw-bold text-primary"><?= $tr['services_title'] ?></h2>
-                <p class="text-muted">Standarde înalte în ingineria mediului și construcții hidrotehnice.</p>
             </div>
             <div class="row g-4">
                 <div class="col-md-3">
@@ -320,17 +203,15 @@ $tr = $t[$lang];
         </div>
     </section>
 
-    <!-- Projelerimiz / Proiecte -->
     <section class="py-5" id="proiecte">
         <div class="container py-4">
             <div class="text-center mb-5">
                 <h2 class="fw-bold text-primary"><?= $tr['projects_title'] ?></h2>
-                <p class="text-muted">Câteva dintre realizările noastre majore în infrastructura apei.</p>
             </div>
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="card project-card h-100">
-                        <img src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Otopeni Treatment Plant">
+                        <img src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Project 1">
                         <div class="card-body">
                             <h5 class="card-title fw-bold text-primary"><?= $tr['proj_1_title'] ?></h5>
                             <p class="card-text text-muted small"><?= $tr['proj_1_desc'] ?></p>
@@ -339,7 +220,7 @@ $tr = $t[$lang];
                 </div>
                 <div class="col-md-4">
                     <div class="card project-card h-100">
-                        <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Ploiesti Water Station">
+                        <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Project 2">
                         <div class="card-body">
                             <h5 class="card-title fw-bold text-primary"><?= $tr['proj_2_title'] ?></h5>
                             <p class="card-text text-muted small"><?= $tr['proj_2_desc'] ?></p>
@@ -348,7 +229,7 @@ $tr = $t[$lang];
                 </div>
                 <div class="col-md-4">
                     <div class="card project-card h-100">
-                        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Brasov Industrial Clarifier">
+                        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80" class="card-img-top" alt="Project 3">
                         <div class="card-body">
                             <h5 class="card-title fw-bold text-primary"><?= $tr['proj_3_title'] ?></h5>
                             <p class="card-text text-muted small"><?= $tr['proj_3_desc'] ?></p>
@@ -359,75 +240,43 @@ $tr = $t[$lang];
         </div>
     </section>
 
-    <!-- İletişim Formu ve Bilgileri Bölümü -->
-    <section class="contact-section" id="contact">
-        <div class="container">
+    <section class="py-5 contact-section" id="contact">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold text-primary"><?= $tr['contact_title'] ?></h2>
+                <p class="text-muted"><?= $tr['contact_desc'] ?></p>
+            </div>
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="contact-form-box">
-                        <h2 class="fw-bold text-primary mb-3 text-center"><?= $tr['contact_title'] ?></h2>
-                        <p class="text-muted text-center mb-4">Colaborăm pentru proiecte de succes în domeniul apei. Contactați-ne sau lăsați-ne un mesaj.</p>
-
-                        <?php if ($formStatus === 'success'): ?>
-                            <div class="alert alert-success text-center" role="alert">
-                                <?= $tr['form_success'] ?>
-                            </div>
-                        <?php elseif ($formStatus === 'error'): ?>
-                            <div class="alert alert-danger text-center" role="alert">
-                                <?= $tr['form_error'] ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <form action="index.php?lang=<?= $lang ?>#contact" method="POST">
-                            <!-- Hangi formdan geldiğini belirten gizli alan ve kaynak -->
-                            <input type="hidden" name="form_kaynagi" value="Water Apace Ana Sayfa İletişim Formu">
-                            <input type="hidden" name="ulke" value="România">
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="ad_soyad" class="form-label fw-semibold"><?= $tr['form_name'] ?> *</label>
-                                    <input type="text" class="form-control" id="ad_soyad" name="ad_soyad" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="firma_adi" class="form-label fw-semibold"><?= $tr['form_company'] ?></label>
-                                    <input type="text" class="form-control" id="firma_adi" name="firma_adi">
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label fw-semibold"><?= $tr['form_email'] ?> *</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="telefon" class="form-label fw-semibold"><?= $tr['form_phone'] ?></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">+</span>
-                                        <input type="text" class="form-control" name="ulke_kodu" value="40" style="max-width: 70px;">
-                                        <input type="text" class="form-control" id="telefon" name="telefon" placeholder="712 345 678">
+                        <div class="row g-4 text-start mt-2">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-start">
+                                    <i class="fa-solid fa-location-dot text-info fa-2x me-3 mt-1"></i>
+                                    <div>
+                                        <h6 class="fw-bold mb-1"><?= $lang === 'ro' ? 'Adresă' : 'Address' ?></h6>
+                                        <p class="small text-muted mb-0"><?= $tr['address'] ?></p>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="mb-3">
-                                <label for="konu" class="form-label fw-semibold"><?= $tr['form_subject'] ?></label>
-                                <input type="text" class="form-control" id="konu" name="konu">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-start">
+                                    <i class="fa-solid fa-phone text-info fa-2x me-3 mt-1"></i>
+                                    <div>
+                                        <h6 class="fw-bold mb-1"><?= $lang === 'ro' ? 'Telefon' : 'Phone' ?></h6>
+                                        <p class="small text-muted mb-0"><?= $tr['phone_contact'] ?></p>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="mb-4">
-                                <label for="notu" class="form-label fw-semibold"><?= $tr['form_message'] ?> *</label>
-                                <textarea class="form-control" id="notu" name="notu" rows="4" required></textarea>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-start">
+                                    <i class="fa-solid fa-envelope text-info fa-2x me-3 mt-1"></i>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">E-mail</h6>
+                                        <p class="small text-muted mb-0"><?= $tr['email_contact'] ?></p>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="d-grid">
-                                <button type="submit" name="submit_contact" class="btn btn-info text-white btn-lg fw-bold"><?= $tr['form_submit'] ?></button>
-                            </div>
-                        </form>
-
-                        <div class="mt-5 pt-4 border-top text-center text-muted small">
-                            <p class="mb-1"><i class="fa-solid fa-location-dot me-2 text-info"></i> <?= $tr['address'] ?></p>
-                            <p class="mb-1"><i class="fa-solid fa-phone me-2 text-info"></i> <?= $tr['phone_contact'] ?></p>
-                            <p class="mb-0"><i class="fa-solid fa-envelope me-2 text-info"></i> <?= $tr['email_contact'] ?></p>
                         </div>
                     </div>
                 </div>
@@ -435,22 +284,17 @@ $tr = $t[$lang];
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="row g-4 align-items-center">
                 <div class="col-md-6 text-center text-md-start">
                     <h5 class="fw-bold mb-1">WATER APACE SRL</h5>
-                    <p class="small text-white-50 mb-0">&copy; <?= date('Y')-2 ?> WATER APACE SRL. <?= $tr['rights'] ?></p>
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <p class="small text-white-50 mb-0"> WATER APACE SRL.</p>
+                    <p class="small text-white-50 mb-0">&copy; <?= date('Y') ?> WATER APACE SRL. <?= $tr['rights'] ?></p>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
