@@ -7,8 +7,8 @@
 declare(strict_types=1);
 
 // Veritabanı bağlantısı config klasöründen dahil ediliyor
-require_once 'config/database.php';
-
+//require_once 'config/database.php';
+/*
 $db = (new Database())->connect();
 
 // Form gönderildi mi kontrolü
@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_contact'])) {
         $formStatus = 'error';
     }
 }
-
+*/
 // Dil seçimi yönetimi (Varsayılan: Romence - 'ro')
 $lang = $_GET['lang'] ?? 'ro';
 if (!in_array($lang, ['ro', 'en'])) {
